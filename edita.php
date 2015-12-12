@@ -1,9 +1,4 @@
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>Editar Cliente</title>
-    </head>
-    <body>
+
         <?php
 // coger el parámetro que nos permitirá identificar el registro
 // isset() es una función PHP usado para verificar si una variable tiene valor o no
@@ -44,7 +39,7 @@
             $stmt->fetch();
         }
         ?>
-        <form action='edita.php?id=<?php echo htmlspecialchars($id); ?>' method='post' border='0'>
+        <form action='index.php?p=edita&id=<?php echo htmlspecialchars($id); ?>' method='post' border='0'>
             <table>
                 <tr>
                     <td>NIF:</td>
@@ -88,6 +83,5 @@
             </table>
         </form>
 
-    </body>
-</html>
+
 

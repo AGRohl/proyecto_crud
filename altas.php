@@ -38,7 +38,7 @@
             }
         }
         ?>
-        <form action='altas.php' method='post'>
+        <form action='index.php?p=altas' method='post'>
             <table border='0'>
                 <tr>
                     <td>NIF</td>
@@ -76,7 +76,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <input type='submit' value='Save' /> 
+                        <input type='submit' value='Guarda' /> 
                         <a href='index.php'>Volver al inicio</a>
                     </td>
                 </tr>
