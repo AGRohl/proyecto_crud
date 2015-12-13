@@ -8,6 +8,8 @@ and open the template in the editor.
     <head>
         <meta charset="UTF-8">
         <title>Proyecto CRUD</title>
+        <script type="text/JavaScript" src="js/sha512.js"></script> 
+        <script type="text/JavaScript" src="js/forms.js"></script>
         <script type="text/JavaScript">
             function borra_cliente(id) {
             var answer = confirm('¿Estás seguro que deseas borrar el cliente?');
@@ -32,7 +34,7 @@ and open the template in the editor.
             </div>
             <div id="content">
                 <?php
-                $default = 'lista'; //nuestra página por defecto.
+                $default = 'login'; //nuestra página por defecto.
                 $page = isset($_GET['p']) ? $_GET['p'] : $default; //obtenemos la página que queremos mostrar.
                 $page = basename($page); //nos quedamos con el nombre.
                 if (!file_exists($page . '.php')) { //comprobamos que el fichero exista
