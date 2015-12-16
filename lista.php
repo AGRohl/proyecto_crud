@@ -1,11 +1,11 @@
         <h1>Listado de Clientes</h1>
         <?php
 // incluir la conexión a la base de datos
-        include 'conexion.php';
-        $action = isset($_GET['action']) ? $_GET['action'] : "";
+ //       include 'conexion.php';
+        $estado = isset($_GET['estado']) ? $_GET['estado'] : "";
 
 // si viene de borra.php
-        if ($action == 'deleted') {
+        if ($estado == 'deleted') {
             echo "<div>El registro cliente ha sido borrado.</div>";
         }
 // Elegir los datos que deseamos recuperar de la tabla
@@ -21,7 +21,7 @@
 
 // enlace a alta de cliente
             echo "<div>";
-            echo "<a href='index.php?p=altas'>Alta cliente</a>";
+            echo "<a href='index.php?accion=altas'>Alta cliente</a>";
             echo "</div>";
 
 //cabecera de los datos mostrados
@@ -48,7 +48,7 @@
                 echo "<td>$usuario</td>";
                 echo "<td>";
 // Este enlace es para modificar el registro
-                echo "<a href='index.php?p=edita&id={$id}'>Edita</a>";
+                echo "<a href='index.php?accion=edita&id={$id}'>Edita</a>";
                 echo " / ";
 // Este enlace es para borrar el registro y también se explicará más tarde
                 echo "<a href='javascript:borra_cliente(\"$id\")'> Elimina </a>";

@@ -15,8 +15,8 @@ and open the template in the editor.
             var answer = confirm('¿Estás seguro que deseas borrar el cliente?');
             if (answer) {
             // si el usuario hace click en ok, 
-            // se ejecutar borrar.php
-            window.location = 'borra.php?id=' + id;
+            // se ejecutar borra.php
+            window.location = 'index.php?accion=borra&id=' + id;
             }
             }
         </script> 
@@ -34,14 +34,7 @@ and open the template in the editor.
             </div>
             <div id="content">
                 <?php
-                $default = 'login'; //nuestra página por defecto.
-                $page = isset($_GET['p']) ? $_GET['p'] : $default; //obtenemos la página que queremos mostrar.
-                $page = basename($page); //nos quedamos con el nombre.
-                if (!file_exists($page . '.php')) { //comprobamos que el fichero exista
-                    $page = $default; //si no existe mostramos la página por defecto
-                    //NOTA: Podíamos mostrar la página 404
-                }
-                include( $page . '.php'); //y ahora mostramos la pagina llamada
+                include('controlador.php'); //y ahora mostramos la pagina llamada                      
                 ?> 
             </div>
             <div id="footer">

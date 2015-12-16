@@ -4,7 +4,7 @@ include_once 'inc/functions.php';
 
 sec_session_start();
 
-if (login_check($mysqli) == true) {
+if (login_check($conexion) == true) {
     $logged = 'in';
 } else {
     $logged = 'out';
@@ -26,7 +26,7 @@ if (isset($_GET['error'])) {
 </form>
 
 <?php
-if (login_check($mysqli) == true) {
+if (login_check($conexion) == true) {
     echo '<p>Currently logged ' . $logged . ' as ' . htmlentities($_SESSION['usuario']) . '.</p>';
 
     echo '<p>Do you want to change user? <a href="inc/logout.php">Log out</a>.</p>';

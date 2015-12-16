@@ -8,13 +8,13 @@
 
 function sec_session_start() {
     $session_name = 'sec_session_id';   //Asignamos un nombre de sesión
-    $secure = SECURE;
+    $secure = false; //SECURE; Lo ideal sería true para trabajar con https
     $httponly = true;
 // Obliga a la sesión a utilizar solo cookies.
 // Habilitar este ajuste previene ataques que impican pasar el id de sesión en la URL.
     if (ini_set('session.use_only_cookies', 1) === FALSE) {
-        header("Location: ../error.php?err=No puedo iniciar una sesion segura (ini_set)");
-        exit();
+        $page = "error";
+        $error="No puedo iniciar una sesion segura (ini_set)";
     }
 // Obtener los parámetros de la cookie de sesión
     $cookieParams = session_get_cookie_params();
@@ -30,13 +30,9 @@ function sec_session_start() {
     //Ayuda a evitar ataques de fijación de sesión
 }
 
-function login($usuario, $password, $mysqli) {
+function login($usuario, $password, $conexion) {
 // Usar consultas preparadas previene de los ataques SQL injection. 
-    echo $usuario, "SELECT id, usuario, password 
-        FROM clientes
-        WHERE usuario = ?
-        LIMIT 1";
-    if ($stmt = $mysqli->prepare("SELECT id, usuario, password 
+    if ($stmt = $conexion->prepare("SELECT id, usuario, password 
         FROM clientes
         WHERE usuario = ?
         LIMIT 1")) {
@@ -51,8 +47,10 @@ function login($usuario, $password, $mysqli) {
         if ($stmt->num_rows == 1) {
 // Si el usuario existe comprobamos que la cuenta no esté bloqueada
             // por haber hecho demasiados intentos.
-            if (checkbrute($id, $mysqli) == true) { //la veremos luego
+            if (checkbrute($id, $conexion) == true) { //la veremos luego
 // La cuenta está bloqueada. Aquí escribir las acciones de aviso al usuario pertinentes: enviar un correo
+                $error = "Cuenta Bloqueada";
+                echo $error;
                 return false;
             } else {
                 // Comprobar si el password de la bd coincide con la enviada por el usuario
@@ -72,7 +70,7 @@ function login($usuario, $password, $mysqli) {
                 } else {
 // Password no es correcto. Registramos el intento
                     $now = time();
-                    $mysqli->query("INSERT INTO login_attempts(id, time)
+                    $conexion->query("INSERT INTO login_attempts(id, time)
                                     VALUES ('$id', '$now')");
                     return false;
                 }
@@ -84,23 +82,20 @@ function login($usuario, $password, $mysqli) {
     }
 }
 
-function checkbrute($id, $mysqli) {
+function checkbrute($id, $conexion) {
     // Toma la hora actual
     $now = time();
- 
     // Se cuentan los intentos de las 2 últimas horas 
     $valid_attempts = $now - (2 * 60 * 60);
- 
-    if ($stmt = $mysqli->prepare("SELECT time 
+    if ($stmt = $conexion->prepare("SELECT time 
                              FROM login_attempts 
                              WHERE id = ? 
                             AND time > '$valid_attempts'")) {
         $stmt->bind_param('i', $id);
-
         $stmt->execute();
         $stmt->store_result();
-        // Si ha habido más de 10 logins
-        if ($stmt->num_rows > 10) {
+        // Si ha habido más de 3 logins
+        if ($stmt->num_rows > 3) {
             return true;
         } else {
             return false;
@@ -108,9 +103,7 @@ function checkbrute($id, $mysqli) {
     }
 }
 
-
-
-function login_check($mysqli) {
+function login_check($conexion) {
 // Comprueba que todas las variables de sesión estén inicializadas
     if (isset($_SESSION['id'], $_SESSION['usuario'], $_SESSION['login_string'])) {
         $id = $_SESSION['id'];
@@ -118,7 +111,7 @@ function login_check($mysqli) {
         $usuario = $_SESSION['usuario'];
 // Obtener el user-agent string.
         $user_browser = $_SERVER['HTTP_USER_AGENT'];
-        if ($stmt = $mysqli->prepare("SELECT password 
+        if ($stmt = $conexion->prepare("SELECT password 
                                       FROM clientes 
                                       WHERE id = ? LIMIT 1")) {
             $stmt->bind_param('i', $id);

@@ -1,5 +1,4 @@
 
-
 function formhash(form, password) {
     // Create a new element input, this will be our hashed password field. 
     var p = document.createElement("input");
@@ -11,7 +10,7 @@ function formhash(form, password) {
     p.value = hex_sha512(password.value);
  
     // Make sure the plaintext password doesn't get sent. 
-    password.value = "aaaa";
+    password.value = "aaaa"; //un valor para despistar
  
     // Finally submit the form. 
     form.submit();
