@@ -14,13 +14,11 @@ function sec_session_start() {
 // Habilitar este ajuste previene ataques que impican pasar el id de sesión en la URL.
     if (ini_set('session.use_only_cookies', 1) === FALSE) {
         $page = "error";
-        $error="No puedo iniciar una sesion segura (ini_set)";
+        $error = "No puedo iniciar una sesion segura (ini_set)";
     }
 // Obtener los parámetros de la cookie de sesión
     $cookieParams = session_get_cookie_params();
-    session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], 
-            $cookieParams["domain"], 
-            $secure, //si es true la cookie sólo se enviará sobre conexiones seguras
+    session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], $cookieParams["domain"], $secure, //si es true la cookie sólo se enviará sobre conexiones seguras
             $httponly);  //Marca la cookie como accesible sólo a través del protocolo HTTP. 
 //Esto siginifica que la cookie no será accesible por lenguajes de script, tales como JavaScript. 
 //Este ajuste puede ayudar de manera efectiva //a reducir robos de indentidad a través de ataques
@@ -36,14 +34,14 @@ function login($usuario, $password, $conexion) {
         FROM clientes
         WHERE usuario = ?
         LIMIT 1")) {
-        $stmt->bind_param('s', $usuario);  
-        $stmt->execute();    
+        $stmt->bind_param('s', $usuario);
+        $stmt->execute();
         $stmt->store_result();
 // recogemos el resultado de la consulta
         $stmt->bind_result($id, $usuario, $db_password); //password de la bd
         $stmt->fetch();
 // calculamos el sha512 del password
-       // $password = hash('sha512', $password); //este el parámetro de la función
+        // $password = hash('sha512', $password); //este el parámetro de la función
         if ($stmt->num_rows == 1) {
 // Si el usuario existe comprobamos que la cuenta no esté bloqueada
             // por haber hecho demasiados intentos.
@@ -57,7 +55,7 @@ function login($usuario, $password, $conexion) {
                 if ($db_password == $password) { //las dos en sha512
 // Password es correcto: Tomamos user-agent string del navegador del usuario
 // por ejemplo Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1)
-                    $user_browser = $_SERVER['HTTP_USER_AGENT']; 
+                    $user_browser = $_SERVER['HTTP_USER_AGENT'];
 // Esto es una protección contra ataques XSS
                     $user_id = preg_replace("/[^0-9]+/", "", $id);
                     $_SESSION['id'] = $id;
@@ -115,13 +113,13 @@ function login_check($conexion) {
                                       FROM clientes 
                                       WHERE id = ? LIMIT 1")) {
             $stmt->bind_param('i', $id);
-            $stmt->execute();   
+            $stmt->execute();
             $stmt->store_result();
             if ($stmt->num_rows == 1) {
                 $stmt->bind_result($password);
                 $stmt->fetch();
                 $login_check = hash('sha512', $password . $user_browser);
- 
+
                 if ($login_check == $login_string) {
                     // coinciden 
                     return true;
@@ -143,5 +141,16 @@ function login_check($conexion) {
     }
 }
 
+function logout() {
+    // Unset all session values 
+    $_SESSION = array();
 
+// get session parameters 
+    $params = session_get_cookie_params();
 
+// Delete the actual cookie. 
+    setcookie(session_name(), '', time() - 42000, $params["path"], $params["domain"], $params["secure"], $params["httponly"]);
+
+// Destroy session 
+    session_destroy();
+}
